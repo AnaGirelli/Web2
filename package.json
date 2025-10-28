@@ -5,7 +5,7 @@
   "type": "module",
   "main": "app.js",
   "scripts": {
-    "start": "node mvc/app.js"
+    "start": "node app.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
@@ -13,7 +13,8 @@
     "ejs": "^3.1.9",
     "express": "^4.21.2",
     "express-session": "^1.17.3",
-    "pg": "^8.11.3"
+    "pg": "^8.16.3",
+    "sequelize": "^6.37.7"
   },
   "author": "",
   "license": "ISC",
