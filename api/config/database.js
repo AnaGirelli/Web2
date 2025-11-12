@@ -1,10 +1,9 @@
-//Arquivo de configuração do banco de dados
-
-const { Sequelize } = require('sequelize');
-
-const sequelize = new Sequelize('verdear', 'postgres', 'postgres', {
-    host: 'localhost',
+//Arquivo de configuração do banco de dados 
+import Sequelize from 'sequelize'; 
+const sequelize = new Sequelize('postgres', 'postgres', 'postgres', { 
+    host: 'localhost', 
     dialect: 'postgres',
-});
-
-module.exports = sequelize;
+    port: 5432
+}); 
+    
+export default sequelize;
