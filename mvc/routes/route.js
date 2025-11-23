@@ -17,7 +17,7 @@ const route = express.Router();
 //     console.log('{ force: true }');
 // });
 
-// Rota para exibir a página de login (GET /)
+// Rota para exibir a página de login
 route.get("/", function(req, res) {
     // Adiciona o redirecionamento se o usuário já estiver logado
     if (req.session && req.session.isAuthenticated) {
@@ -29,14 +29,37 @@ route.get("/", function(req, res) {
 // Rota para processar o login (POST /login)
 route.post("/login", controllerPessoa.authenticate);
 
-// Rota para a home (Protegida)
+// Rota para a home
 route.get("/home", isAuthenticated, (req, res) => {
     res.render('home'); // Renderiza a tela home.ejs
 });
 
+
+// Rota para gestão de cadastro 
+route.get("/gestao-cadastro", isAuthenticated, async (req, res) => {
+    const id_vendedor = req.session.userId;
+
+    const catalogo = await controllerProduto.fetchProdutosVendedor(id_vendedor);
+    const categorias = await controllerProduto.fetchCategorias();
+    const unidades = await controllerProduto.fetchUnidades();
+
+    res.render("gestao_cadastro", {
+        name: req.session.userName,
+        email: req.session.userEmail,
+        role: req.session.userRole,
+        catalogo,
+        categorias,
+        unidades
+    });
+});
+
+
 // Controller Pessoa
-route.post("/pessoa", controllerPessoa.postPessoa);
-route.put("/pessoa/:id", controllerPessoa.putPessoa);
+route.put('/pessoa/cadastro', controllerPessoa.putCadastro);
+route.put('/pessoa/senha', controllerPessoa.putSenha);
+route.delete('/pessoa/:id', controllerPessoa.deletePessoa);
+
+
 
 // Controller Avaliacao
 route.get("/avaliacao", controllerAvaliacao.getAvaliacao);
@@ -59,9 +82,9 @@ route.post("/frete", controllerFrete.postFrete);
 route.put("/frete/:id", controllerFrete.putFrete);
 
 // Controller Produto
-route.get("/produto", controllerProduto.getProduto);
-route.post("/produto", controllerProduto.postProduto);
-route.put("/produto/:id", controllerProduto.putProduto);
+route.get("/vendedor/produtos", controllerProduto.getProdutosVendedor);
+route.post("/vendedor/produtos", controllerProduto.postProduto);
+route.put("/vendedor/produtos/:id", controllerProduto.putProduto);
 
 // Controller Venda
 route.get("/venda", controllerVenda.getVenda);

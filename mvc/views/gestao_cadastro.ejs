@@ -3,14 +3,589 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verdear</title>
+    <title>Minha Conta | Verdear</title>
     <link rel="icon" type="logo/png" href="/logo_simplificada.png"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
     <style>
+        :root {
+            --color-primary: #386641; /* Verde Escuro */
+            --color-secondary: #f39c12; /* Laranja */
+            --color-light-green: #d9ead3; /* Verde Claro */
+            --color-text-dark: #2c3e50;
+            --color-gray: #f4f4f4;
+            --color-white: #ffffff;
+        }
 
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--color-gray);
+        }
+
+        /* --- 1. CABEÇALHO --- */
+        .main-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 5%;
+            border-bottom: 1px solid #eee;
+            background-color: var(--color-white);
+        }
+
+        .header-left a {
+            cursor: pointer; /* Muda o cursor para indicar clique */
+        }
+        .header-left .logo { max-width: 100px; margin-right: 20px; }
+        .search-bar { max-width: 500px; height: 45px; background-color: var(--color-primary); border-radius: 50px; display: flex; align-items: center; padding: 0 20px; }
+        .search-bar i, .search-bar input { color: var(--color-white); }
+        .search-bar input { background: none; border: none; outline: none; width: 100%; }
+        .header-icons { display: flex; align-items: center; }
+        /* Link do Usuário para a gestão */
+        .header-icons .icon-btn { border: 2px solid var(--color-secondary); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; margin-left: 15px; cursor: pointer; color: var(--color-secondary); font-size: 1.2em; }
+        .header-icons .icon-btn.user { border-color: var(--color-primary); color: var(--color-primary); }
+        
+        /* --- 2. LAYOUT PRINCIPAL (Minha Conta) --- */
+        .main-content {
+            display: flex;
+            max-width: 1200px;
+            margin: 30px auto;
+            background-color: var(--color-white);
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            min-height: 600px;
+        }
+
+        .sidebar {
+            width: 300px;
+            padding: 30px 20px;
+            background-color: var(--color-white);
+            border-right: 1px solid var(--color-gray);
+            border-radius: 15px 0 0 15px;
+        }
+
+        .user-info {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--color-gray);
+            margin-bottom: 20px;
+        }
+
+        .profile-picture {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: var(--color-light-green);
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            color: var(--color-primary);
+        }
+
+        .user-info h3 { margin: 5px 0 2px; color: var(--color-text-dark); }
+        .user-info p { margin: 0; font-size: 0.9em; color: #7f8c8d; }
+        .user-info .role { font-weight: bold; color: var(--color-secondary); }
+        .edit-icon { position: relative; top: -75px; left: 35px; color: var(--color-primary); cursor: pointer; }
+
+        .config-menu { list-style: none; padding: 0; }
+        .config-menu li a {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 10px;
+            margin-bottom: 5px;
+            text-decoration: none;
+            color: var(--color-text-dark);
+            border-radius: 8px;
+            transition: background-color 0.3s;
+            cursor: pointer; /* Adicionado para indicar o clique */
+        }
+
+        /* Classe .active agora é manipulada pelo JS */
+        .config-menu li a:hover, .config-menu li a.active {
+            background-color: var(--color-light-green);
+            color: var(--color-primary);
+        }
+
+        .config-menu i { margin-right: 15px; width: 20px; text-align: center; color: var(--color-secondary); }
+        .config-menu li a:hover i { color: var(--color-primary); }
+        
+        /* Ícone de seta na direita */
+        .config-menu .fa-chevron-right { color: #ccc; font-size: 0.8em; }
+
+        /* --- 3. CONTEÚDO PRINCIPAL --- */
+        .main-area {
+            flex-grow: 1;
+            padding: 30px;
+            border-radius: 0 15px 15px 0;
+        }
+
+        .main-area h2 {
+            color: var(--color-secondary);
+            font-size: 1.8em;
+            border-bottom: 2px solid var(--color-secondary);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+
+        /* --- 6. ESTILOS DE ABAS E FORMULÁRIOS --- */
+        .content-tab {
+            display: none; /* Esconde todas as abas por padrão */
+            padding: 20px 0;
+        }
+
+        .content-tab.active {
+            display: block; /* Mostra apenas a aba ativa */
+        }
+        
+        /* Estilos de formulário geral */
+        .update-form label, .password-form label, .form-cadastro-produto label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: var(--color-text-dark);
+        }
+
+        .update-form input, .password-form input, .form-cadastro-produto input{
+            width: 100%;
+            max-width: 400px; /* Limita a largura dos campos */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        
+        .update-form button, .password-form button, .form-cadastro-produto button {
+             margin-top: 20px;
+        }
+
+        /* --- ESTILOS PADRÃO DO BOTÃO (MANTIDOS) --- */
+        .btn-cadastrar {
+            background-color: var(--color-secondary);
+            color: var(--color-white);
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: opacity 0.3s;
+        }
+        
+        .btn-cadastrar:hover { opacity: 0.9; }
+
+        /* --- NOVOS ESTILOS PARA MENSAGEM DE SUCESSO (TOAST) --- */
+        #status-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            /* Usando um verde de sucesso mais claro que o primary, ou primary mesmo */
+            background-color: var(--color-primary); 
+            color: var(--color-white);
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 1000; 
+            opacity: 0; /* Começa invisível */
+            visibility: hidden; /* Garante que não interfira no clique */
+            transition: opacity 0.5s ease, visibility 0.5s;
+        }
+
+        #status-message p {
+            margin: 0;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        #status-message i {
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .show-message {
+            opacity: 1 !important;
+            visibility: visible !important;
+        } 
     </style>
 
 </head>
 <body>
+
+    <header class="main-header">
+        <div class="header-left">
+            <a href="/"><img src="/logo.png" alt="Verdear Logo" class="logo"></a>
+        </div>
+
+        <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Pesquisar...">
+        </div>
+
+        <div class="header-icons">
+            <div class="icon-btn"><i class="far fa-comment-dots"></i></div>
+            <div class="icon-btn"><i class="fas fa-shopping-cart"></i></div>
+            <a href="/gestao-cadastro" class="icon-btn user"><i class="far fa-user"></i></a>
+        </div>
+    </header>
+
+    <main class="main-content">
+        
+        <aside class="sidebar">
+            <div class="user-info">
+                <div class="profile-picture">
+                    <i class="far fa-user"></i>
+                </div>
+                <i class="fas fa-pencil-alt edit-icon"></i> 
+                
+                <h3><%= name %></h3>
+                <p><%= email %></p>
+                <p class="role"><%= role %></p>
+            </div>
+            
+            <h4 style="color: var(--color-primary);">Configurações</h4>
+            
+            <ul class="config-menu">
+                <li><a href="#alterar-cadastro" class="menu-item active" data-content="alterar-cadastro"><i class="fas fa-cog"></i>Alterar cadastro<i class="fas fa-chevron-right"></i></a></li>
+                <li><a href="#redefinir-senha" class="menu-item" data-content="redefinir-senha"><i class="fas fa-key"></i>Senha<i class="fas fa-chevron-right"></i></a></li>
+                
+                <% if (role === 'VENDEDOR') { %>
+                    <li><a href="#cadastrar-produtos" class="menu-item" data-content="cadastrar-produtos"><i class="fas fa-box-open"></i>Cadastrar produtos<i class="fas fa-chevron-right"></i></a></li>
+                    <li><a href="#catalogo-produtos" class="menu-item" data-content="catalogo-produtos"><i class="fas fa-book-open"></i>Catálogo de produtos<i class="fas fa-chevron-right"></i></a></li>
+                <% } else if (role === 'CLIENTE') { %>
+                    <li><a href="#historico-compras" class="menu-item" data-content="historico-compras"><i class="fas fa-history"></i>Histórico de compras<i class="fas fa-chevron-right"></i></a></li>
+                    <li><a href="#avaliacoes-feitas" class="menu-item" data-content="avaliacoes-feitas"><i class="fas fa-star"></i>Avaliações feitas<i class="fas fa-chevron-right"></i></a></li>
+                <% } %>
+            </ul>
+        </aside>
+
+        <section class="main-area">
+            
+            <!-- FORMULÁRIO DE ALTERAR CADASTRO -->
+            <div id="alterar-cadastro" class="content-tab active">
+                <h2>Alterar Cadastro</h2>
+                <!-- Direcionar para a rota PUT /pessoa/cadastro (definida no controller) -->
+                <form action="/pessoa/cadastro" method="POST" class="update-form">
+                    <label for="nome_pessoa">Nome:</label>
+                    <input type="text" id="nome_pessoa" name="nome_pessoa" value="<%= name %>" required>
+
+                    <label for="email">E-mail:</label>
+                    <input type="email" id="email" name="email" value="<%= email %>" required>
+
+                    <button type="submit" class="btn-cadastrar">Atualizar Dados</button>
+                </form>
+            </div>
+
+            <!-- FORMULÁRIO DE REDEFINIR SENHA -->
+            <div id="redefinir-senha" class="content-tab">
+                <h2>Redefinir Senha</h2>
+                <!-- Direcionar para a rota PUT /pessoa/senha (definida no controller) -->
+                <form action="/pessoa/senha" method="POST" class="password-form">
+                    <label for="senhaAtual">Senha Atual:</label>
+                    <input type="password" id="senhaAtual" name="senhaAtual" required>
+                    
+                    <label for="novaSenha">Nova Senha:</label>
+                    <input type="password" id="novaSenha" name="novaSenha" required>
+
+                    <label for="confirmarSenha">Confirmar Nova Senha:</label>
+                    <input type="password" id="confirmarSenha" name="confirmarSenha" required>
+
+                    <button type="submit" class="btn-cadastrar">Salvar Nova Senha</button>
+                </form>
+            </div>
+
+
+            <% if (role === 'VENDEDOR') { %>
+                
+                <div id="cadastrar-produtos" class="content-tab">
+                    <h2>Cadastrar Produto</h2>
+
+                    <!-- Formulário seguindo o layout padrão .update-form -->
+                    <form id="form-cadastro-produto" action="/vendedor/produtos" method="POST" class="update-form">
+
+                        <!-- Nome -->
+                        <label for="nome_produto">Nome do Produto:</label>
+                        <input 
+                            type="text"
+                            id="nome_produto" 
+                            name="nome_produto"
+                            required
+                        >
+
+                        <!-- Descrição -->
+                        <label for="descricao">Descrição:</label>
+                        <input 
+                            type="text" 
+                            id="descricao" 
+                            name="descricao"
+                        >
+
+                        <!-- Preço -->
+                        <label for="preco">Preço:</label>
+                        <input 
+                            type="number" 
+                            id="preco" 
+                            name="preco"
+                            step="0.01"
+                            min="0"
+                            required
+                        >
+
+                        <!-- Estoque -->
+                        <label for="estoque">Estoque:</label>
+                        <input 
+                            type="number" 
+                            id="estoque" 
+                            name="estoque"
+                            step="0.001"
+                            min="0"
+                            required
+                        >
+
+                        <!-- Categoria -->
+                        <label for="id_categoria">Categoria:</label>
+                        <select id="id_categoria" name="id_categoria">
+                            <option value="">Selecione</option>
+                            <% if (categorias) { %>
+                                <% categorias.forEach(cat => { %>
+                                    <option value="<%= cat.id_categoria %>">
+                                        <%= cat.nome_categoria %>
+                                    </option>
+                                <% }) %>
+                            <% } %>
+                        </select>
+
+                        <!-- Unidade de Medida -->
+                        <label for="id_unidade_medida">Unidade de Medida:</label>
+                        <select id="id_unidade_medida" name="id_unidade_medida" required>
+                            <option value="">Selecione</option>
+
+                            <% if (unidades && unidades.length > 0) { %>
+                                <% unidades.forEach(u => { %>
+                                    <option value="<%= u.id_unidade_medida %>">
+                                        <%= u.nome_unidade_medida %>
+                                    </option>
+                                <% }) %>
+                            <% } %>
+                        </select>
+
+                        <!-- URL da Imagem -->
+                        <label for="url_imagem">URL da Imagem:</label>
+                        <input 
+                            type="text"
+                            id="url_imagem"
+                            name="url_imagem"
+                        >
+
+                        <button type="submit" class="btn-cadastrar">Salvar Produto</button>
+                    </form>
+                </div>
+
+                <div id="catalogo-produtos" class="content-tab">
+                    <h2>Catálogo de produtos</h2>
+
+                    <p style="color: var(--color-text-dark);">
+                        Aqui você pode visualizar os seus produtos cadastrados.
+                    </p>
+
+                    <% if (catalogo && catalogo.length > 0) { %>
+
+                        <ul style="margin-top: 15px; padding-left: 18px;">
+                            <% catalogo.forEach(prod => { %>
+                                <li style="margin-bottom: 8px; color: var(--color-primary);">
+                                    <%= prod.nome_produto %>
+                                </li>
+                            <% }) %>
+                        </ul>
+
+                    <% } else { %>
+
+                        <p style="margin-top: 20px; font-weight: bold; color: #777;">
+                            Você ainda não possui produtos cadastrados.
+                        </p>
+
+                    <% } %>
+                </div>
+
+                
+            <% } else if (role === 'CLIENTE') { %>
+                
+                <div id="historico-compras" class="content-tab">
+                    <h2>Histórico de compras</h2>
+                    <div class="order-history-item">
+                        <div class="order-image" style="background-color: #386641;"></div>
+                        <div class="order-details">
+                            <h4>Pedido #00123 - Entregue em 15/10/2025</h4>
+                            <p>Itens: Morangos (2kg), Laranja Pêra (5kg)</p>
+                        </div>
+                        <button class="btn-buy-again">COMPRAR ITENS NOVAMENTE</button>
+                    </div>
+
+                    <div class="order-history-item">
+                        <div class="order-image" style="background-color: #386641;"></div>
+                        <div class="order-details">
+                            <h4>Pedido #00122 - Entregue em 01/10/2025</h4>
+                            <p>Itens: Pêssego Maduro (3kg)</p>
+                        </div>
+                        <button class="btn-buy-again">COMPRAR ITENS NOVAMENTE</button>
+                    </div>
+
+                    <p style="text-align: right; margin-top: 20px;"><a href="#" style="color: var(--color-secondary); text-decoration: none;">Ver todos os pedidos</a></p>
+                </div>
+                
+                <div id="avaliacoes-feitas" class="content-tab">
+                    <h2>Avaliações feitas</h2>
+                    <p style="color: var(--color-text-dark);">Aqui você encontra todas as avaliações que fez para produtos e vendedores.</p>
+                    <div style="padding: 15px; border: 1px solid #ccc; border-radius: 8px; margin-top: 15px;">
+                        <i class="fas fa-star" style="color: gold;"></i><i class="fas fa-star" style="color: gold;"></i><i class="fas fa-star" style="color: gold;"></i><i class="fas fa-star" style="color: gold;"></i><i class="far fa-star"></i>
+                        <p style="margin-top: 5px;">Ótimo vendedor, produtos frescos e entrega rápida!</p>
+                    </div>
+                </div>
+
+            <% } else { %>
+                <div id="default-error" class="content-tab active">
+                    <p>Erro: Tipo de usuário não reconhecido.</p>
+                </div>
+            <% } %>
+
+        </section>
+        
+    </main>
     
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <script>
+    // Função de mensagem estilo toast
+    function showFeedbackMessage(message, isSuccess = true) {
+        const $status = $('#status-message');
+        
+        const icon = isSuccess ? 'fas fa-check-circle' : 'fas fa-exclamation-triangle';
+        const bgColor = isSuccess ? 'var(--color-primary)' : '#c0392b';
+
+        $status.css('background-color', bgColor);
+        $status.find('p').html('<i class="' + icon + '"></i> ' + message);
+
+        $status.addClass('show-message');
+
+        setTimeout(() => {
+            $status.removeClass('show-message');
+        }, 2500);
+    }
+
+    $(document).ready(function () {
+
+        // ------------------------------
+        //  Alternância das abas
+        // ------------------------------
+        $('.config-menu a.menu-item').on('click', function (e) {
+            e.preventDefault();
+
+            const targetId = $(this).attr('data-content');
+
+            $('.config-menu a.menu-item').removeClass('active');
+            $(this).addClass('active');
+
+            $('.main-area .content-tab').removeClass('active');
+            $('#' + targetId).addClass('active');
+
+            history.pushState(null, null, '/gestao-cadastro#' + targetId);
+        });
+
+        const initialHash = window.location.hash.substring(1);
+        if (initialHash) {
+            $('.config-menu a.menu-item').removeClass('active');
+            $(`.config-menu a[data-content="${initialHash}"]`).addClass('active');
+            $('.main-area .content-tab').removeClass('active');
+            $('#' + initialHash).addClass('active');
+        }
+
+        // ------------------------------
+        //  Atualizar nome + email
+        // ------------------------------
+        $('.update-form').on('submit', function (e) {
+            e.preventDefault();
+            const form = $(this);
+
+            $.ajax({
+                type: 'PUT',
+                url: form.attr('action'),
+                data: form.serialize(),
+
+                success: function (response) {
+                    if (response.success) {
+                        showFeedbackMessage("Cadastro atualizado com sucesso!");
+
+                        // Atualiza DOM da sidebar
+                        $('#nome_pessoa').val();
+                        $('.user-info h3').text($('#nome_pessoa').val());
+                        $('.user-info p:first').text($('#email').val());
+                    } else {
+                        showFeedbackMessage(response.message || "Erro ao atualizar", false);
+                    }
+                },
+
+                error: function () {
+                    showFeedbackMessage("Erro interno ao atualizar cadastro", false);
+                }
+            });
+        });
+
+        // ------------------------------
+        //  Atualizar senha
+        // ------------------------------
+        $('.password-form').on('submit', function (e) {
+            e.preventDefault();
+            const form = $(this);
+
+            $.ajax({
+                type: 'PUT',
+                url: form.attr('action'),
+                data: form.serialize(),
+
+                success: function (response) {
+                    if (response.success) {
+                        showFeedbackMessage("Senha alterada com sucesso!");
+                        form.trigger('reset');
+                    } else {
+                        showFeedbackMessage(response.message || "Erro ao alterar senha", false);
+                    }
+                },
+
+                error: function () {
+                    showFeedbackMessage("Erro interno ao alterar senha", false);
+                }
+            });
+        });
+
+        // ------------------------------
+        //  Cadastrar produto
+        // ------------------------------
+            $("#form-cadastro-produto").on("submit", function (e) {
+                e.preventDefault();
+
+                $.ajax({
+                    type: "POST",
+                    url: "/vendedor/produtos",
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            showFeedbackMessage("Produto cadastrado com sucesso!");
+                            $("#form-cadastro-produto")[0].reset();
+                        } else {
+                            showFeedbackMessage(response.message, false);
+                        }
+                    },
+                    error: function () {
+                        showFeedbackMessage("Erro ao cadastrar produto.", false);
+                    }
+                });
+            });
+    });
+</script>
+
 </body>
 </html>

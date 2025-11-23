@@ -11,6 +11,8 @@ import FormaPagamentoModel from './formapagamento.js';
 import FreteModel from './frete.js';
 import VendaModel from './venda.js';
 import VendaProdutoModel from './vendaproduto.js';
+import CategoriaModel from './categoria.js';
+import UnidadeMedidaModel from './unidademedida.js';
 
 // Inicialização dos modelos
 const Produto = ProdutoModel(sequelize, Sequelize);
@@ -21,6 +23,8 @@ const FormaPagamento = FormaPagamentoModel(sequelize, Sequelize);
 const Frete = FreteModel(sequelize, Sequelize);
 const Venda = VendaModel(sequelize, Sequelize);
 const VendaProduto = VendaProdutoModel(sequelize, Sequelize);
+const Categoria = CategoriaModel(sequelize, Sequelize);
+const UnidadeMedida = UnidadeMedidaModel(sequelize, Sequelize);
 
 
 // Exportação de todos os modelos para uso nos controllers
@@ -32,7 +36,9 @@ export {
     FormaPagamento, 
     Frete, 
     Venda, 
-    VendaProduto 
+    VendaProduto,
+    Categoria,
+    UnidadeMedida
 };
 
 // Exportação da instância do Sequelize

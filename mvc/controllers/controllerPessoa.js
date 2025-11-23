@@ -1,98 +1,176 @@
-import { Pessoa } from '../models/index.js'; // Ajuste a importação para o padrão do projeto
+import { Pessoa } from '../models/index.js';
 
 export default {
-    
-    // Autenticação para o login
+
+    // =============================================================
+    // LOGIN - Autenticação
+    // =============================================================
     async authenticate(req, res) {
         try {
             const { email, senha } = req.body; // Captura dados do formulário
 
-            // 1. Busca a Pessoa no banco de dados pelo e-mail
-            const pessoa = await Pessoa.findOne({ where: { email } });
-
-            if (!pessoa) {
-                return res.render('login', { error: 'E-mail ou senha inválidos' });
-            }
-            // 2. Verifica se a senha está correta
-            if (pessoa.senha !== senha) {
+            const pessoa = await Pessoa.findOne({ where: { email } }); // Busca usuário pelo e-mail
+            // Verifica se o usuário existe e se a senha está correta
+            if (!pessoa || pessoa.senha !== senha) {
                 return res.render('login', { error: 'E-mail ou senha inválidos' });
             }
 
-            // 3. Login SUCESSO: Configura a sessão
+            // Salva na sessão
             req.session.isAuthenticated = true;
             req.session.userId = pessoa.id_pessoa;
             req.session.userName = pessoa.nome_pessoa;
+            req.session.userEmail = pessoa.email;
+            req.session.userRole = pessoa.tipo_usuario;
 
-            // 4. Redireciona para a página principal (Home/Dashboard)
-            return res.redirect('/home');
-            
+            return res.redirect('/home'); //Direciona para a home após login bem-sucedido
+
         } catch (error) {
             console.error('Erro de autenticação:', error);
             return res.render('login', { error: 'Erro interno do servidor.' });
         }
     },
-   /* // GET para o login
-    async getLogin(req, res) {
-            res.render('',{layout: 'login.html'});
-        },
-    async getLogout(req, res) {
-        //res.cookie("userData", req.cookies.userData, { maxAge: 0, httpOnly: true });
-        req.session.destroy();
-        res.redirect('/');
-    },
-    */
-    // POST /pessoa (Criar novo)
-    async postPessoa(req, res) {
+
+
+
+    // =============================================================
+    // ATUALIZAR NOME + EMAIL DO USUÁRIO LOGADO
+    // PUT /pessoa/cadastro
+    // =============================================================
+    async putCadastro(req, res) {
+        const userId = req.session.userId; //Assume o ID da sessão
+
+        if (!userId) {
+            return res.status(401).json({ success: false, message: 'Usuário não autenticado.' });
+        }
+
         try {
-            // Cria um novo registro com os dados do corpo da requisição
-            const novaPessoa = await Pessoa.create(req.body);
-            // Retorna status 201 Created
-            return res.status(201).json(novaPessoa);
+            const { nome_pessoa, email } = req.body;
+            //Tenta realizar o update
+            const [updated] = await Pessoa.update(
+                { nome_pessoa, email },
+                { where: { id_pessoa: userId } }
+            );
+            // Se nenhum registro foi encontrado/atualizado
+            if (updated === 0) {
+                return res.status(404).json({ success: false, message: 'Cadastro não encontrado.' });
+            }
+            // Atualiza os dados na sessão
+            req.session.userName = nome_pessoa;
+            req.session.userEmail = email;
+
+            return res.json({ success: true, message: 'Cadastro atualizado com sucesso!' });
+
         } catch (error) {
-            return res.status(500).json({ error: 'Erro ao cadastrar pessoa', details: error.message });
+            console.error('Erro ao atualizar cadastro:', error);
+            return res.status(500).json({ success: false, message: 'Erro interno ao atualizar cadastro.', details: error.message });
         }
     },
 
-    // PUT /pessoa/:id (Atualizar)
-    async putPessoa(req, res) {
-        try {
-            // 1. Tenta atualizar o registro pelo id_pessoa (chave primária)
-            const [updated] = await Pessoa.update(req.body, {
-                where: { id_pessoa: req.params.id }
-            });
 
-            if (updated === 0) {
-                // Se 0 registros foram atualizados, retorna 404 Not Found
-                return res.status(404).json({ error: 'Pessoa não encontrada para atualização' });
+
+    // =============================================================
+    // ATUALIZAR SENHA
+    // PUT /pessoa/senha
+    // =============================================================
+    async putSenha(req, res) {
+        const userId = req.session.userId; //Assume o ID da sessão
+
+        if (!userId) {
+            return res.status(401).json({ success: false, message: 'Usuário não autenticado.' });
+        }
+
+        try {
+            const { senhaAtual, novaSenha, confirmarSenha } = req.body;
+
+            const pessoa = await Pessoa.findByPk(userId);
+            //Validações antes de atualizar no banco
+            if (!pessoa) {
+                return res.status(404).json({ success: false, message: 'Usuário não encontrado.' });
             }
 
-            // 2. Busca o registro atualizado para retorná-lo ao cliente
-            const pessoaAtualizada = await Pessoa.findByPk(req.params.id);
-            return res.status(200).json(pessoaAtualizada); // Retorna 200 OK
-            
+            if (pessoa.senha !== senhaAtual) {
+                return res.status(400).json({ success: false, message: 'Senha atual incorreta.' });
+            }
+
+            if (novaSenha !== confirmarSenha) {
+                return res.status(400).json({ success: false, message: 'A nova senha e a confirmação não coincidem.' });
+            }
+
+            // Atualiza a senha no banco de dados
+            const [updated] = await Pessoa.update(
+            { senha: novaSenha },
+            { where: { id_pessoa: userId } }
+            );
+            // Se nenhum registro foi encontrado/atualizado
+            if (updated === 0) {
+                return res.status(404).json({ success: false, message: 'Senha não atualizada.' });
+            }
+
+            return res.json({ success: true, message: 'Senha redefinida com sucesso!' });
+
         } catch (error) {
-            return res.status(500).json({ error: 'Erro ao atualizar pessoa', details: error.message });
+            console.error('Erro ao atualizar senha:', error);
+            return res.status(500).json({ success: false, message: 'Erro interno ao redefinir senha.', details: error.message });
         }
     },
 
-    // DELETE /pessoa/:id (Deletar)
+
+
+    // =============================================================
+    // CADASTRAR NOVO USUÁRIO
+    // POST /pessoa
+    // =============================================================
+    async postPessoa(req, res) {
+        try {
+            const novaPessoa = await Pessoa.create(req.body);
+            return res.status(201).json({
+                success: true,
+                message: 'Pessoa cadastrada com sucesso!',
+                data: novaPessoa
+            });
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                error: 'Erro ao cadastrar pessoa',
+                details: error.message
+            });
+        }
+    },
+
+
+
+    // =============================================================
+    // DELETAR USUÁRIO POR ID
+    // DELETE /pessoa/:id
+    // =============================================================
     async deletePessoa(req, res) {
         try {
-            // Deleta o registro pelo id_pessoa
             const deletado = await Pessoa.destroy({
                 where: { id_pessoa: req.params.id }
             });
 
             if (deletado === 0) {
-                // Se 0 registros foram deletados, retorna 404 Not Found
-                return res.status(404).json({ error: 'Pessoa não encontrada para exclusão' });
+                return res.status(404).json({ success: false, message: 'Pessoa não encontrada para exclusão' });
             }
 
-            // Retorna 200 OK com mensagem de sucesso
-            return res.status(200).json({ mensagem: 'Pessoa deletada com sucesso' });
-
+            // Logout automático após excluir o usuário
+            req.session.destroy(err => {
+                if (err) {
+                    return res.status(500).json({
+                        success: true,
+                        message: 'Usuário deletado, mas falha ao encerrar sessão.',
+                        error: err
+                    });
+                }
+                return res.redirect('/login');
+            });
         } catch (error) {
-            return res.status(500).json({ error: 'Erro ao deletar pessoa', details: error.message });
+            return res.status(500).json({
+                success: false,
+                error: 'Erro ao deletar pessoa',
+                details: error.message
+            });
         }
     }
+
 };

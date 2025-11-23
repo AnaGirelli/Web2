@@ -24,7 +24,7 @@
             background-color: var(--color-white);
         }
 
-        /* --- 1. CABEÇALHO --- */
+        /* Cabeçalho */
         .main-header {
             display: flex;
             align-items: center;
@@ -96,9 +96,7 @@
              color: var(--color-primary);
         }
 
-        /* --------------------------------- */
-        /* --- 2. BANNER/CAROUSEL (NOVOS ESTILOS) --- */
-        /* --------------------------------- */
+        /* Banner - Carrousel */
         .banner-container {
             max-width: 1000px;
             margin: 20px auto;
@@ -143,7 +141,7 @@
             color: var(--color-white);
             font-size: 2.5em;
             font-weight: bold;
-            pointer-events: none; /* Permite cliques nas setas por baixo */
+            pointer-events: none; /* Permite cliques nas setas */
         }
 
         .banner-overlay span {
@@ -177,9 +175,8 @@
         .carousel-control.next {
             right: 10px;
         }
-        /* --------------------------------- */
         
-        /* --- 3. CATEGORIAS --- */
+        /* Categorias */
         .categories-section {
             margin: 20px 5%;
             padding: 20px;
@@ -217,7 +214,7 @@
             height: auto;
         }
 
-        /* --- 4. PRODUTOS EM DESTAQUE --- */
+        /* Produtos em destaque */
         .products-section {
             margin: 20px 5%;
             display: flex;
@@ -285,7 +282,7 @@
             text-align: left;
         }
         
-        /* --- 5. NOTIFICAÇÃO DO CARRINHO --- */
+        /* Notificação do carrinho */
         #cart-notification {
             position: fixed;
             bottom: 20px;
@@ -305,6 +302,9 @@
             opacity: 1;
             transform: translateX(-50%) translateY(-10px);
         }
+        .header-left a {
+            cursor: pointer; /* Muda o cursor para uma mãozinha */
+        }
     </style>
 </head>
 <body>
@@ -315,7 +315,7 @@
 
     <header class="main-header">
         <div class="header-left">
-            <img src="/logo.png" alt="Verdear Logo" class="logo">
+            <a href="/"><img src="/logo.png" alt="Verdear Logo" class="logo"></a>
         </div>
 
         <div class="search-bar">
@@ -326,7 +326,7 @@
         <div class="header-icons">
             <div class="icon-btn"><i class="far fa-comment-dots"></i></div>
             <div class="icon-btn"><i class="fas fa-shopping-cart"></i></div>
-            <div class="icon-btn user"><i class="far fa-user"></i></div>
+            <a href="/gestao-cadastro" class="icon-btn user" style="text-decoration: none;"><i class="far fa-user"></i></a>
         </div>
     </header>
 
@@ -413,7 +413,7 @@
     </section>
 
     <script>
-        // --- Lógica do Carrinho (Notificação) ---
+        // Lógica do Carrinho (Notificação)
         const productCards = document.querySelectorAll('.product-card');
         const notification = document.getElementById('cart-notification');
 
@@ -433,7 +433,7 @@
             });
         });
 
-        // --- Lógica do Carousel ---
+        // Lógica do Carousel
         const carouselInner = document.getElementById('carousel-inner');
         const carouselItems = document.querySelectorAll('.banner-item');
         const prevBtn = document.getElementById('prev-btn');
@@ -449,14 +449,14 @@
 
         // Event listener para a seta "Próximo"
         nextBtn.addEventListener('click', () => {
-            // (currentIndex + 1) % totalItems: Avança, mas volta para 0 se passar do último
+            // Avança, mas volta para 0 se passar do último
             currentIndex = (currentIndex + 1) % totalItems; 
             updateCarousel();
         });
 
         // Event listener para a seta "Anterior"
         prevBtn.addEventListener('click', () => {
-            // (currentIndex - 1 + totalItems) % totalItems: Volta, mas vai para o último se for menor que 0
+            // Volta, mas vai para o último se for menor que 0
             currentIndex = (currentIndex - 1 + totalItems) % totalItems; 
             updateCarousel();
         });
