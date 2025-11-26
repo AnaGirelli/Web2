@@ -147,31 +147,41 @@ export default {
                 });
             }
 
-            const { nome_produto, descricao, preco, estoque, id_categoria, id_unidade_medida, url_imagem } = req.body;
+            const { nome_produto, descricao, preco, estoque, id_categoria, id_unidade_medida, url_imagem, ativo } = req.body;
 
-            if (!nome_produto || !preco || !id_unidade_medida) {
+            // If only updating 'ativo' allow partial update
+            if (!nome_produto && typeof ativo === 'undefined') {
                 return res.status(400).json({
                     success: false,
                     message: "Preencha todos os campos obrigatórios."
                 });
             }
 
-            if (estoque < 0) {
+            if (nome_produto && (!preco || !id_unidade_medida)) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Preencha todos os campos obrigatórios."
+                });
+            }
+
+            if (typeof estoque !== 'undefined' && estoque < 0) {
                 return res.status(400).json({
                     success: false,
                     message: "Estoque não pode ser negativo."
                 });
             }
 
-            await produto.update({
-                nome_produto,
-                descricao,
-                preco,
-                estoque,
-                id_categoria,
-                id_unidade_medida,
-                url_imagem
-            });
+            const updateData = {};
+            if (typeof nome_produto !== 'undefined') updateData.nome_produto = nome_produto;
+            if (typeof descricao !== 'undefined') updateData.descricao = descricao;
+            if (typeof preco !== 'undefined') updateData.preco = preco;
+            if (typeof estoque !== 'undefined') updateData.estoque = estoque;
+            if (typeof id_categoria !== 'undefined') updateData.id_categoria = id_categoria;
+            if (typeof id_unidade_medida !== 'undefined') updateData.id_unidade_medida = id_unidade_medida;
+            if (typeof url_imagem !== 'undefined') updateData.url_imagem = url_imagem;
+            if (typeof ativo !== 'undefined') updateData.ativo = ativo;
+
+            await produto.update(updateData);
 
             return res.json({
                 success: true,

@@ -43,6 +43,12 @@ export default (sequelize, Sequelize) => {
             type: Sequelize.BOOLEAN, 
             allowNull: true
         }
+        ,
+        frete_fixo: {
+            type: Sequelize.DECIMAL(10,2),
+            allowNull: true,
+            defaultValue: 0.00
+        }
     }, {
         tableName: 'pessoa', // Força o Sequelize a usar EXATAMENTE 'pessoa'
         freezeTableName: true, // Garante que o nome não será pluralizado

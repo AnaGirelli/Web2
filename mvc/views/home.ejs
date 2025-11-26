@@ -318,14 +318,17 @@
             <a href="/"><img src="/logo.png" alt="Verdear Logo" class="logo"></a>
         </div>
 
-        <div class="search-bar">
+        <form class="search-bar" action="/produtos/busca" method="GET" style="display:flex; align-items:center;">
             <i class="fas fa-search"></i>
-            <input type="text" placeholder="Pesquisar...">
-        </div>
+            <input type="text" name="q" placeholder="Pesquisar produtos..." style="flex: 1;">
+            <button type="submit" style="background: none; border: none; color: var(--color-white); cursor: pointer; padding: 0 10px;">
+                <i class="fas fa-search"></i>
+            </button>
+        </form>
 
         <div class="header-icons">
             <div class="icon-btn"><i class="far fa-comment-dots"></i></div>
-            <div class="icon-btn"><i class="fas fa-shopping-cart"></i></div>
+            <a href="/carrinho" class="icon-btn"><i class="fas fa-shopping-cart"></i></a>
             <a href="/gestao-cadastro" class="icon-btn user" style="text-decoration: none;"><i class="far fa-user"></i></a>
         </div>
     </header>
@@ -342,7 +345,7 @@
             
         <div class="banner-item">
             <a href="https://g1.globo.com/sp/presidente-prudente-e-regiao/noticia/2025/11/18/agricultura-familiar-e-organica-e-fonte-de-renda-para-familias-no-interior-de-sp.ghtml" target="_blank" style="text-decoration: none; color: inherit;">
-                <img src="/banner2.png" alt="Banner 1" class="banner-img">
+                <img src="/banner2.png" alt="Banner 2" class="banner-img">
                 <div class="banner-overlay">
                 </div>
             </a>
@@ -350,7 +353,7 @@
 
         <div class="banner-item">
             <a href="https://www.kuhnbrasil.com.br/noticias/agricultura-familiar-forca-que-alimenta-o-brasil" target="_blank" style="text-decoration: none; color: inherit;">
-                <img src="/banner3.png" alt="Banner 1" class="banner-img">
+                <img src="/banner3.png" alt="Banner 3" class="banner-img">
                 <div class="banner-overlay">
                 </div>
             </a>
@@ -365,12 +368,11 @@
         <% 
             // Simulação de dados de categorias.
             const categories = [
-                { id: 1, name: 'Frutas', iconUrl: '/icons/frutas.png' },
-                { id: 2, name: 'Verduras', iconUrl: '/icons/verduras.png' },
-                { id: 3, name: 'Laticínios', iconUrl: '/icons/laticinios.png' },
-                { id: 4, name: 'Grãos', iconUrl: '/icons/graos.png' },
-                { id: 5, name: 'Carnes', iconUrl: '/icons/carnes.png' },
-                { id: 6, name: 'Especiarias', iconUrl: '/icons/especiarias.png' }
+                { id: 1, name: 'Hortifrúti', iconUrl: '/icons/frutas.png' },
+                { id: 2, name: 'Laticínios', iconUrl: '/icons/verduras.png' },
+                { id: 3, name: 'Grãos', iconUrl: '/icons/laticinios.png' },
+                { id: 4, name: 'Pães e Massas', iconUrl: '/icons/graos.png' },
+                { id: 6, name: 'Temperos', iconUrl: '/icons/especiarias.png' }
             ];
         %>
         
@@ -379,37 +381,42 @@
                 <div class="category-icon">
                     <i class="fas fa-tractor fa-2x" style="color:#528b3a;"></i> 
                 </div>
-                Categoria
+                <%= category.name %>
             </a>
         <% }); %>
     </section>
 
     <section class="products-section">
-        <% 
-            // Simulação de produtos.
-            const products = [
-                { id: 1, name: 'Laranja Pêra', price: 9.90, rating: 4.5, imageUrl: '/images/laranja.png' },
-                { id: 2, name: 'Morango Orgânico', price: 15.50, rating: 5.0, imageUrl: '/images/morango.png' },
-                { id: 3, name: 'Pêssego Maduro', price: 12.00, rating: 4.0, imageUrl: '/images/pessego.png' }
-            ];
-        %>
-        
-        <% products.forEach(product => { %>
-            <div class="product-card" data-product-id="<%= product.id %>">
-                <div class="rating">
-                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+        <% if (produtos && produtos.length > 0) { %>
+            <% produtos.forEach(produto => { %>
+                <div class="product-card" data-product-id="<%= produto.id_produto %>">
+                    <div class="rating">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                    </div>
+                    
+                    <div class="product-image-container">
+                        <% if (produto.url_imagem) { %>
+                            <img src="<%= produto.url_imagem %>" alt="<%= produto.nome_produto %>">
+                        <% } else { %>
+                            <img src="https://via.placeholder.com/200x150/d9ead3/386641?text=<%= produto.nome_produto.split(' ')[0] %>" alt="<%= produto.nome_produto %>">
+                        <% } %>
+                    </div>
+                    
+                    <div style="padding: 10px 0; color: var(--color-white);">
+                        <h4 style="margin: 5px 0; font-size: 1em;"><%= produto.nome_produto %></h4>
+                    </div>
+                    
+                    <div class="product-details">
+                        <span class="price">R$ <%= parseFloat(produto.preco).toFixed(2).replace('.', ',') %></span>
+                        <div class="add-btn"><i class="fas fa-plus"></i></div>
+                    </div>
                 </div>
-                
-                <div class="product-image-container">
-                    <img src="https://via.placeholder.com/200x150/d9ead3/386641?text=<%= product.name.split(' ')[0] %>" alt="<%= product.name %>">
-                </div>
-                
-                <div class="product-details">
-                    <span class="price">R$ <%= product.price.toFixed(2).replace('.', ',') %></span>
-                    <div class="add-btn"><i class="fas fa-plus"></i></div>
-                </div>
+            <% }); %>
+        <% } else { %>
+            <div style="width: 100%; text-align: center; padding: 40px; color: var(--color-text-dark);">
+                <p>Nenhum produto disponível no momento.</p>
             </div>
-        <% }); %>
+        <% } %>
     </section>
 
     <script>
@@ -418,18 +425,32 @@
         const notification = document.getElementById('cart-notification');
 
         productCards.forEach(card => {
-            card.addEventListener('click', function() {
+            card.addEventListener('click', function () {
                 const productId = this.getAttribute('data-product-id');
-                
-                // 1. Mostrar a notificação
-                notification.classList.add('show');
-                
-                console.log(`Produto ID ${productId} adicionado ao carrinho.`);
-                
-                // 2. Esconder a notificação após 2 segundos
-                setTimeout(() => {
-                    notification.classList.remove('show');
-                }, 2000); // 2000 milissegundos = 2 segundos
+
+                fetch("/carrinho/add", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        id_produto: productId,
+                        quantidade: 1
+                    })
+                })
+                .then(res => res.json())
+                .then((data) => {
+                    if (data.success) {
+                        notification.classList.add('show');
+                        setTimeout(() => {
+                            notification.classList.remove('show');
+                        }, 2000);
+                    } else {
+                        alert(data.message || "Erro ao adicionar ao carrinho");
+                    }
+                })
+                .catch(err => {
+                    console.error("Erro:", err);
+                    alert("Erro ao adicionar produto ao carrinho");
+                });
             });
         });
 

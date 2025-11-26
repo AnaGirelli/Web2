@@ -9,10 +9,21 @@ export default {
         try {
             const { email, senha } = req.body; // Captura dados do formulário
 
+            if (!email || !senha) {
+                return res.render('login', { error: 'Por favor, preencha todos os campos' });
+            }
+
             const pessoa = await Pessoa.findOne({ where: { email } }); // Busca usuário pelo e-mail
+            
             // Verifica se o usuário existe e se a senha está correta
             if (!pessoa || pessoa.senha !== senha) {
                 return res.render('login', { error: 'E-mail ou senha inválidos' });
+            }
+
+            // Verifica se a sessão está disponível
+            if (!req.session) {
+                console.error('Sessão não disponível');
+                return res.render('login', { error: 'Erro de sessão. Tente novamente.' });
             }
 
             // Salva na sessão
@@ -26,7 +37,8 @@ export default {
 
         } catch (error) {
             console.error('Erro de autenticação:', error);
-            return res.render('login', { error: 'Erro interno do servidor.' });
+            console.error('Stack trace:', error.stack);
+            return res.render('login', { error: 'Erro interno do servidor. Verifique o console para mais detalhes.' });
         }
     },
 
@@ -137,6 +149,69 @@ export default {
         }
     },
 
+    // POST /cadastrar (form HTML) - registra e redireciona para login
+    async registerFromForm(req, res) {
+        try {
+            await Pessoa.create(req.body);
+            return res.redirect('/');
+        } catch (error) {
+            console.error('Erro no cadastro via formulário:', error);
+            return res.render('cadastro', { error: 'Erro ao cadastrar pessoa.' });
+        }
+    },
+
+    // =============================================================
+    // ATUALIZAR FRETE FIXO (para vendedores)
+    // PUT /pessoa/frete
+    // =============================================================
+    async putFrete(req, res) {
+        const userId = req.session.userId;
+
+        if (!userId) {
+            return res.status(401).json({ success: false, message: 'Usuário não autenticado.' });
+        }
+
+        try {
+            const { frete_fixo } = req.body;
+
+            const pessoa = await Pessoa.findByPk(userId);
+            if (!pessoa) {
+                return res.status(404).json({ success: false, message: 'Usuário não encontrado.' });
+            }
+
+            // Apenas vendedores podem configurar frete
+            if (pessoa.tipo_usuario !== 'VENDEDOR') {
+                return res.status(403).json({ success: false, message: 'Apenas vendedores podem configurar frete.' });
+            }
+
+            const [updated] = await Pessoa.update(
+                { frete_fixo: frete_fixo || 0 },
+                { where: { id_pessoa: userId } }
+            );
+
+            if (updated === 0) {
+                return res.status(400).json({ success: false, message: 'Não foi possível atualizar o frete.' });
+            }
+
+            return res.json({ success: true, message: 'Frete atualizado com sucesso!' });
+
+        } catch (error) {
+            console.error('Erro ao atualizar frete:', error);
+            return res.status(500).json({ success: false, message: 'Erro interno ao atualizar frete.' });
+        }
+    },
+
+    // Recupera o frete do usuário (uso interno nas rotas)
+    async getFrete(userId) {
+        try {
+            const pessoa = await Pessoa.findByPk(userId);
+            return pessoa ? pessoa.frete_fixo : null;
+        } catch (error) {
+            console.error('Erro ao obter frete do usuário:', error);
+            return null;
+        }
+    },
+
 
 
     // =============================================================
@@ -150,7 +225,10 @@ export default {
             });
 
             if (deletado === 0) {
-                return res.status(404).json({ success: false, message: 'Pessoa não encontrada para exclusão' });
+                return res.status(404).json({ 
+                    success: false, 
+                    message: 'Pessoa não encontrada para exclusão' 
+                });
             }
 
             // Logout automático após excluir o usuário
@@ -162,7 +240,7 @@ export default {
                         error: err
                     });
                 }
-                return res.redirect('/login');
+                return res.json({ success: true });
             });
         } catch (error) {
             return res.status(500).json({

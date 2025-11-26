@@ -18,6 +18,10 @@ export default (sequelize, Sequelize) => {
             type: Sequelize.STRING,
             allowNull: true
         },
+        descricao: {
+            type: Sequelize.STRING(255),
+            allowNull: true
+        },
         preco: {
             type: Sequelize.DECIMAL(10,2),
             allowNull: true

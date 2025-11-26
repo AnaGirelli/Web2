@@ -5,7 +5,9 @@
   "type": "module",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "dev": "node --inspect app.js",
+    "debug": "node --inspect-brk app.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
