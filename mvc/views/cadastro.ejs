@@ -144,6 +144,29 @@
             text-align: left;
         }
     </style>
+    <script>
+        // Validação e formatação de CPF no frontend
+        document.addEventListener('DOMContentLoaded', function() {
+            const cpfInput = document.getElementById('cpf');
+            
+            // Permite apenas números
+            cpfInput.addEventListener('input', function(e) {
+                this.value = this.value.replace(/\D/g, '');
+            });
+            
+            // Validação antes de enviar
+            const form = document.querySelector('.cadastro-form');
+            form.addEventListener('submit', function(e) {
+                const cpf = cpfInput.value.replace(/\D/g, '');
+                if (cpf.length !== 11) {
+                    e.preventDefault();
+                    alert('CPF deve conter exatamente 11 dígitos numéricos.');
+                    cpfInput.focus();
+                    return false;
+                }
+            });
+        });
+    </script>
 </head>
 <body>
     <div class="background-container">
@@ -163,6 +186,10 @@
             <form action="/cadastrar" method="POST" class="cadastro-form">
                 <div class="input-group">
                     <input type="text" id="nome_pessoa" name="nome_pessoa" placeholder="Nome completo" required>
+                </div>
+
+                <div class="input-group">
+                    <input type="text" id="cpf" name="cpf" placeholder="CPF (apenas números)" maxlength="11" pattern="[0-9]{11}" required>
                 </div>
 
                 <div class="input-group">

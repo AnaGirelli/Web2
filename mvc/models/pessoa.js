@@ -12,7 +12,8 @@ export default (sequelize, Sequelize) => {
         },
         cpf: {
             type: Sequelize.STRING(11), 
-            allowNull: true
+            allowNull: false,
+            unique: true
         },
         email: {
             type: Sequelize.STRING(100), 

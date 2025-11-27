@@ -1,7 +1,7 @@
 {
   "name": "verdear",
   "version": "1.0.0",
-  "description": "Projeto MVC com sessões (cliente e vendedor)",
+  "description": "Projeto MVC com sessões",
   "type": "module",
   "main": "app.js",
   "scripts": {

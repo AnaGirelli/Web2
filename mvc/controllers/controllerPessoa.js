@@ -1,4 +1,5 @@
 import { Pessoa } from '../models/index.js';
+import { Op } from 'sequelize';
 
 export default {
 
@@ -152,11 +153,70 @@ export default {
     // POST /cadastrar (form HTML) - registra e redireciona para login
     async registerFromForm(req, res) {
         try {
-            await Pessoa.create(req.body);
+            const { nome_pessoa, cpf, email, senha, tipo_usuario } = req.body;
+
+            // Validação dos campos obrigatórios
+            if (!nome_pessoa || !cpf || !email || !senha || !tipo_usuario) {
+                return res.render('cadastro', { error: 'Por favor, preencha todos os campos obrigatórios.' });
+            }
+
+            // Validação do CPF (deve ter 11 dígitos numéricos)
+            const cpfLimpo = cpf.replace(/\D/g, ''); // Remove caracteres não numéricos
+            if (cpfLimpo.length !== 11) {
+                return res.render('cadastro', { error: 'CPF deve conter exatamente 11 dígitos numéricos.' });
+            }
+
+            // Verifica se já existe um usuário com o mesmo CPF ou email
+            const pessoaExistente = await Pessoa.findOne({
+                where: {
+                    [Op.or]: [
+                        { cpf: cpfLimpo },
+                        { email: email }
+                    ]
+                }
+            });
+
+            if (pessoaExistente) {
+                if (pessoaExistente.cpf === cpfLimpo) {
+                    return res.render('cadastro', { error: 'CPF já cadastrado. Use outro CPF ou faça login.' });
+                }
+                if (pessoaExistente.email === email) {
+                    return res.render('cadastro', { error: 'E-mail já cadastrado. Use outro e-mail ou faça login.' });
+                }
+            }
+
+            // Cria a pessoa com os dados validados
+            await Pessoa.create({
+                nome_pessoa,
+                cpf: cpfLimpo,
+                email,
+                senha,
+                tipo_usuario,
+                frete_fixo: tipo_usuario === 'VENDEDOR' ? 0.00 : null
+            });
+
             return res.redirect('/');
         } catch (error) {
             console.error('Erro no cadastro via formulário:', error);
-            return res.render('cadastro', { error: 'Erro ao cadastrar pessoa.' });
+            
+            // Mensagens de erro mais específicas
+            let errorMessage = 'Erro ao cadastrar pessoa.';
+            if (error.name === 'SequelizeUniqueConstraintError') {
+                if (error.errors && error.errors[0]) {
+                    const field = error.errors[0].path;
+                    if (field === 'cpf') {
+                        errorMessage = 'CPF já cadastrado. Use outro CPF ou faça login.';
+                    } else if (field === 'email') {
+                        errorMessage = 'E-mail já cadastrado. Use outro e-mail ou faça login.';
+                    }
+                }
+            } else if (error.name === 'SequelizeDatabaseError') {
+                if (error.message.includes('cpf')) {
+                    errorMessage = 'Erro ao processar CPF. Verifique se o CPF está correto.';
+                }
+            }
+            
+            return res.render('cadastro', { error: errorMessage });
         }
     },
 
@@ -209,45 +269,6 @@ export default {
         } catch (error) {
             console.error('Erro ao obter frete do usuário:', error);
             return null;
-        }
-    },
-
-
-
-    // =============================================================
-    // DELETAR USUÁRIO POR ID
-    // DELETE /pessoa/:id
-    // =============================================================
-    async deletePessoa(req, res) {
-        try {
-            const deletado = await Pessoa.destroy({
-                where: { id_pessoa: req.params.id }
-            });
-
-            if (deletado === 0) {
-                return res.status(404).json({ 
-                    success: false, 
-                    message: 'Pessoa não encontrada para exclusão' 
-                });
-            }
-
-            // Logout automático após excluir o usuário
-            req.session.destroy(err => {
-                if (err) {
-                    return res.status(500).json({
-                        success: true,
-                        message: 'Usuário deletado, mas falha ao encerrar sessão.',
-                        error: err
-                    });
-                }
-                return res.json({ success: true });
-            });
-        } catch (error) {
-            return res.status(500).json({
-                success: false,
-                error: 'Erro ao deletar pessoa',
-                details: error.message
-            });
         }
     }
 

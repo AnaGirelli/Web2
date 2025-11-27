@@ -1,13 +1,9 @@
 import express from 'express';
 import database from '../config/database.js';
 import controllerAvaliacao from '../controllers/controllerAvaliacao.js';
-import controllerChat from '../controllers/controllerChat.js';
-import controllerFormaPagamento from '../controllers/controllerFormaPagamento.js';
-import controllerFrete from '../controllers/controllerFrete.js';
 import controllerPessoa from '../controllers/controllerPessoa.js';
 import controllerProduto from '../controllers/controllerProduto.js';
 import controllerVenda from '../controllers/controllerVenda.js';
-import controllerVendaProduto from '../controllers/controllerVendaProduto.js';
 import controllerCarrinho from '../controllers/controllerCarrinho.js';
 import controllerHome from '../controllers/controllerHome.js';
 import isAuthenticated from '../middlewares/authMiddleware.js';
@@ -142,31 +138,13 @@ route.post('/carrinho/pagamento', isAuthenticated, controllerCarrinho.savePagame
 // Controller Pessoa
 route.put('/pessoa/cadastro', isAuthenticated, controllerPessoa.putCadastro);
 route.put('/pessoa/senha', isAuthenticated, controllerPessoa.putSenha);
-route.delete('/pessoa/:id', isAuthenticated, controllerPessoa.deletePessoa);
 // Atualizar frete do vendedor
 route.put('/pessoa/frete', isAuthenticated, controllerPessoa.putFrete);
 
 
 
 // Controller Avaliacao
-route.get("/avaliacao", controllerAvaliacao.getAvaliacao);
 route.post("/avaliacao", isAuthenticated, controllerAvaliacao.postAvaliacao);
-route.put("/avaliacao/:id", controllerAvaliacao.putAvaliacao);
-
-// Controller Chat
-route.get("/chat", controllerChat.getChat);
-route.post("/chat", controllerChat.postChat);
-route.put("/chat/:id", controllerChat.putChat);
-
-// Controller Forma Pagamento
-route.get("/formapagamento", controllerFormaPagamento.getFormaPagamento);
-route.post("/formapagamento", controllerFormaPagamento.postFormaPagamento);
-route.put("/formapagamento/:id", controllerFormaPagamento.putFormaPagamento);
-
-// Controller Frete
-route.get("/frete", controllerFrete.getFrete);
-route.post("/frete", controllerFrete.postFrete);
-route.put("/frete/:id", controllerFrete.putFrete);
 
 // Controller Produto
 route.get("/vendedor/produtos", controllerProduto.getProdutosVendedor);
@@ -176,14 +154,8 @@ route.put("/vendedor/produtos/:id", controllerProduto.putProduto);
 // Controller Venda
 route.get("/finalizar-venda", isAuthenticated, controllerVenda.viewCheckout);
 route.post("/finalizar-venda", isAuthenticated, controllerVenda.confirmarVenda);
-route.get("/venda", controllerVenda.getVenda);
-route.post("/venda", controllerVenda.postVenda);
 route.put("/venda/:id", controllerVenda.putVenda);
 route.delete("/venda/:id", isAuthenticated, controllerVenda.deleteVenda);
 route.get("/vendedor/pedidos", isAuthenticated, controllerVenda.getPedidosVendedor);
-// Controller Venda Produto
-route.get("/vendaproduto", controllerVendaProduto.getVendaProduto);
-route.post("/vendaproduto", controllerVendaProduto.postVendaProduto);
-route.put("/vendaproduto/:id", controllerVendaProduto.putVendaProduto);
 
 export default route;
