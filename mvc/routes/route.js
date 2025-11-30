@@ -138,7 +138,6 @@ route.post('/carrinho/pagamento', isAuthenticated, controllerCarrinho.savePagame
 // Controller Pessoa
 route.put('/pessoa/cadastro', isAuthenticated, controllerPessoa.putCadastro);
 route.put('/pessoa/senha', isAuthenticated, controllerPessoa.putSenha);
-// Atualizar frete do vendedor
 route.put('/pessoa/frete', isAuthenticated, controllerPessoa.putFrete);
 
 

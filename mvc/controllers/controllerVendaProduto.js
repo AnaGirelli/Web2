@@ -16,7 +16,7 @@ export default {
     async postVendaProduto(req, res) {
         try {
             const novoItemVenda = await VendaProduto.create(req.body);
-            // Retorna status 201 Created
+            // Retorna status 201 - Created
             return res.status(201).json(novoItemVenda);
         } catch (error) {
             return res.status(500).json({ error: 'Erro ao cadastrar item de venda', details: error.message });
@@ -32,14 +32,12 @@ export default {
             });
 
             if (updated === 0) {
-                // Se 0 registros foram atualizados, retorna 404 Not Found
                 return res.status(404).json({ error: 'Item de venda não encontrado para atualização' });
             }
 
             // Busca o registro atualizado para retorná-lo ao cliente
             const itemVendaAtualizado = await VendaProduto.findByPk(req.params.id);
             return res.status(200).json(itemVendaAtualizado); // Retorna 200 OK
-            
         } catch (error) {
             return res.status(500).json({ error: 'Erro ao atualizar item de venda', details: error.message });
         }
@@ -54,11 +52,9 @@ export default {
             });
 
             if (deletado === 0) {
-                // Se 0 registros foram deletados, retorna 404 Not Found
                 return res.status(404).json({ error: 'Item de venda não encontrado para exclusão' });
             }
 
-            // Retorna 200 OK com mensagem de sucesso
             return res.status(200).json({ mensagem: 'Item de venda deletado com sucesso' });
 
         } catch (error) {

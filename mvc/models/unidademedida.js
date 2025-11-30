@@ -11,8 +11,8 @@ export default (sequelize, Sequelize) => {
             allowNull: true 
         }
     }, {
-        tableName: 'unidademedida',
-        freezeTableName: true,
-        timestamps: false
+        tableName: 'unidademedida', // Força o Sequelize a usar EXATAMENTE 'unidademedida'
+        freezeTableName: true, // Garante que o nome não será pluralizado
+        timestamps: false // Desativa os campos automáticos de timestamp
     });
 };

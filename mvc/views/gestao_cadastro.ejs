@@ -769,7 +769,7 @@
         </section>
         <!-- Logout -->
             <div class="account-actions">
-                <!-- Botão de Logout -->
+                <!-- Função para logout -->
                 <div class="logout-form">
                     <button onclick="window.location.href='/logout'" class="btn-logout">
                         Sair da Conta
@@ -804,9 +804,7 @@
 
     $(document).ready(function () {
 
-        // ------------------------------
-        //  Alternância das abas
-        // ------------------------------
+        // Função para alternância das abas
         $('.config-menu a.menu-item').on('click', function (e) {
             e.preventDefault();
 
@@ -829,9 +827,7 @@
             $('#' + initialHash).addClass('active');
         }
 
-        // ------------------------------
-        //  Atualizar nome + email
-        // ------------------------------
+        // Função para atualizar nome + email
         $('.update-form').on('submit', function (e) {
             e.preventDefault();
             const form = $(this);
@@ -845,7 +841,7 @@
                     if (response.success) {
                         showFeedbackMessage("Cadastro atualizado com sucesso!");
 
-                        // Atualiza DOM da sidebar
+                        // Função para atualizar DOM da sidebar
                         $('#nome_pessoa').val();
                         $('.user-info h3').text($('#nome_pessoa').val());
                         $('.user-info p:first').text($('#email').val());
@@ -860,9 +856,7 @@
             });
         });
 
-        // ------------------------------
-        //  Atualizar senha
-        // ------------------------------
+        // Função para atualizar senha
         $('.password-form').on('submit', function (e) {
             e.preventDefault();
             const form = $(this);
@@ -887,9 +881,7 @@
             });
         });
 
-        // ------------------------------
-        //  Cadastrar produto
-        // ------------------------------
+        // Função para cadastrar produto
             $("#form-cadastro-produto").on("submit", function (e) {
                 e.preventDefault();
 
@@ -911,13 +903,11 @@
                 });
             });
 
-        // ------------------------------
-        //  Editar produto
-        // ------------------------------
+        // Função para editar produto
         $('.btn-edit-prod').on('click', function() {
             const id = $(this).data('id');
             
-            // Buscar dados do produto via AJAX
+            // Função para buscar dados do produto via AJAX
             $.ajax({
                 type: 'GET',
                 url: '/vendedor/produtos',
@@ -972,9 +962,7 @@
             });
         });
 
-        // ------------------------------
-        //  Toggle ativo/inativo
-        // ------------------------------
+        // Função para toggle ativo/inativo
         $('.toggle-ativo').on('change', function() {
             const id = $(this).data('id');
             const ativo = $(this).is(':checked');
@@ -1000,9 +988,7 @@
             });
         });
 
-        // ------------------------------
-        //  Configurar frete
-        // ------------------------------
+        // Função para configurar frete
         $('#form-frete').on('submit', function(e) {
             e.preventDefault();
             
@@ -1023,9 +1009,7 @@
             });
         });
 
-        // ------------------------------
-        //  Carregar pedidos do vendedor
-        // ------------------------------
+        // Função para carregar pedidos do vendedor
         function carregarPedidosVendedor() {
             $.ajax({
                 type: 'GET',
@@ -1089,9 +1073,7 @@
             setTimeout(carregarPedidosVendedor, 100);
         });
 
-        // ------------------------------
-        //  Atualizar status do pedido
-        // ------------------------------
+        // Função para atualizar status do pedido
         window.atualizarStatusPedido = function(idVenda) {
             const novoStatus = $(`#status-${idVenda}`).val();
             
@@ -1112,9 +1094,7 @@
             });
         };
 
-        // ------------------------------
-        //  Deletar pedido (vendedor)
-        // ------------------------------
+        // Função para deletar pedido (vendedor)
         window.deletarPedidoVendedor = function(idVenda) {
             if (!confirm('Tem certeza que deseja excluir este pedido? Esta ação não pode ser desfeita.')) {
                 return;
@@ -1141,20 +1121,18 @@
             });
         };
 
-        // ------------------------------
-        //  Funções de Avaliação
-        // ------------------------------
+        // Funções de Avaliação
         
-        // Armazenar a nota selecionada para cada pedido
+        // Função para armazenar a nota selecionada para cada pedido
         window.ratings = {};
     });
 
-    // Toggle do formulário de avaliação
+    // Função para toggle do formulário de avaliação
     function toggleAvaliacao(idVenda) {
         const form = document.getElementById('avaliacao-form-' + idVenda);
         if (form) {
             form.classList.toggle('active');
-            // Resetar seleção ao abrir
+            // Função para resetar seleção ao abrir
             if (form.classList.contains('active')) {
                 window.ratings[idVenda] = 0;
                 updateStarsDisplay(idVenda, 0);
@@ -1162,7 +1140,7 @@
         }
     }
 
-    // Selecionar nota
+    // Função para selecionar nota
     function selectRating(idVenda, nota) {
         window.ratings[idVenda] = nota;
         updateStarsDisplay(idVenda, nota);

@@ -3,9 +3,6 @@ import { Op } from 'sequelize';
 
 export default {
 
-    // =============================================================
-    // LOGIN - Autenticação
-    // =============================================================
     async authenticate(req, res) {
         try {
             const { email, senha } = req.body; // Captura dados do formulário
@@ -39,16 +36,12 @@ export default {
         } catch (error) {
             console.error('Erro de autenticação:', error);
             console.error('Stack trace:', error.stack);
-            return res.render('login', { error: 'Erro interno do servidor. Verifique o console para mais detalhes.' });
+            return res.render('login', { error: 'Erro interno do servidor.' });
         }
     },
 
 
-
-    // =============================================================
     // ATUALIZAR NOME + EMAIL DO USUÁRIO LOGADO
-    // PUT /pessoa/cadastro
-    // =============================================================
     async putCadastro(req, res) {
         const userId = req.session.userId; //Assume o ID da sessão
 
@@ -80,11 +73,7 @@ export default {
     },
 
 
-
-    // =============================================================
     // ATUALIZAR SENHA
-    // PUT /pessoa/senha
-    // =============================================================
     async putSenha(req, res) {
         const userId = req.session.userId; //Assume o ID da sessão
 
@@ -127,30 +116,7 @@ export default {
         }
     },
 
-
-
-    // =============================================================
-    // CADASTRAR NOVO USUÁRIO
-    // POST /pessoa
-    // =============================================================
-    async postPessoa(req, res) {
-        try {
-            const novaPessoa = await Pessoa.create(req.body);
-            return res.status(201).json({
-                success: true,
-                message: 'Pessoa cadastrada com sucesso!',
-                data: novaPessoa
-            });
-        } catch (error) {
-            return res.status(500).json({
-                success: false,
-                error: 'Erro ao cadastrar pessoa',
-                details: error.message
-            });
-        }
-    },
-
-    // POST /cadastrar (form HTML) - registra e redireciona para login
+    // POST /cadastrar - registra e redireciona para login
     async registerFromForm(req, res) {
         try {
             const { nome_pessoa, cpf, email, senha, tipo_usuario } = req.body;
@@ -198,32 +164,11 @@ export default {
             return res.redirect('/');
         } catch (error) {
             console.error('Erro no cadastro via formulário:', error);
-            
-            // Mensagens de erro mais específicas
-            let errorMessage = 'Erro ao cadastrar pessoa.';
-            if (error.name === 'SequelizeUniqueConstraintError') {
-                if (error.errors && error.errors[0]) {
-                    const field = error.errors[0].path;
-                    if (field === 'cpf') {
-                        errorMessage = 'CPF já cadastrado. Use outro CPF ou faça login.';
-                    } else if (field === 'email') {
-                        errorMessage = 'E-mail já cadastrado. Use outro e-mail ou faça login.';
-                    }
-                }
-            } else if (error.name === 'SequelizeDatabaseError') {
-                if (error.message.includes('cpf')) {
-                    errorMessage = 'Erro ao processar CPF. Verifique se o CPF está correto.';
-                }
-            }
-            
             return res.render('cadastro', { error: errorMessage });
         }
     },
 
-    // =============================================================
     // ATUALIZAR FRETE FIXO (para vendedores)
-    // PUT /pessoa/frete
-    // =============================================================
     async putFrete(req, res) {
         const userId = req.session.userId;
 
@@ -261,7 +206,7 @@ export default {
         }
     },
 
-    // Recupera o frete do usuário (uso interno nas rotas)
+    // Função para recuperar o frete do usuário
     async getFrete(userId) {
         try {
             const pessoa = await Pessoa.findByPk(userId);

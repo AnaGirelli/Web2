@@ -18,7 +18,7 @@ const port = 3000;
 app.use(session({secret:'textosecreto',
     resave: false, // Boa prática: evita salvar se não houver modificação
     saveUninitialized: false, // Boa prática: evita criar sessão para quem não logou
-    cookie:{maxAge: 30*60*1000}}));
+    cookie:{maxAge: 30*60*1000}})); // Armazena a sessão por 30 minutos
 
 // Define o EJS como motor de view padrão
 app.set('view engine', 'ejs');

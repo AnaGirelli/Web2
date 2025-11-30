@@ -8,11 +8,11 @@ export default (sequelize, Sequelize) => {
         },
         nome_categoria: {
             type: Sequelize.STRING(50), 
-            allowNull: true // Se quiser que seja obrigatório, mude para 'false'
+            allowNull: true
         }
     }, {
-        tableName: 'categoria',
-        freezeTableName: true,
-        timestamps: false
+        tableName: 'categoria', // Força o Sequelize a usar EXATAMENTE 'pessoa'
+        freezeTableName: true, // Garante que o nome não será pluralizado
+        timestamps: false // Desativa os campos automáticos de timestamp
     });
 };

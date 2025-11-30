@@ -326,9 +326,7 @@
 
 <script>
 
-    // ------------------------------------
-    // 1. ATUALIZAR QUANTIDADE
-    // ------------------------------------
+    // Função para atualizar a quantidade
     function updateQtd(id, delta) {
         fetch(`/carrinho/update/${id}`, {
             method: "PUT",
@@ -346,9 +344,7 @@
         .catch(error => console.error('Erro no fetch:', error));
     }
 
-    // ------------------------------------
-    // 2. REMOVER ITEM
-    // ------------------------------------
+    // Função para remover item
     function removeItem(id) {
         if (!confirm("Tem certeza que deseja remover este item do carrinho?")) return;
 
@@ -366,9 +362,7 @@
         .catch(error => console.error('Erro no fetch:', error));
     }
 
-    // ------------------------------------
-    // 3. SELECIONAR FORMA DE PAGAMENTO
-    // ------------------------------------
+    // Função para selecionar forma de pagamento
     function selectPagamento(forma) {
         // Remove active de todos os botões
         document.querySelectorAll('.pay-options button').forEach(btn => {
@@ -377,7 +371,7 @@
             }
         });
 
-        // Adiciona active no botão selecionado
+        // Função para adicionar active no botão selecionado
         if (forma === 'CARTÃO') {
             document.getElementById('btn-cartao').classList.add('active');
         } else if (forma === 'PIX') {
@@ -386,7 +380,7 @@
             document.getElementById('btn-boleto').classList.add('active');
         }
 
-        // Salva na sessão
+        // Função para salvar forma de pagamento na sessão
         fetch('/carrinho/pagamento', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -394,9 +388,7 @@
         }).catch(err => console.error('Erro ao salvar forma de pagamento:', err));
     }
 
-    // ------------------------------------
-    // 4. SELECIONAR TIPO DE ENTREGA
-    // ------------------------------------
+    // Função para selecionar tipo de entrega
     function changeEntrega(tipo) {
         const btnEntrega = document.getElementById('btn-entrega');
         const btnRetirada = document.getElementById('btn-retirada');
@@ -412,7 +404,7 @@
             freteContainer.style.display = 'none';
         }
 
-        // Salva na sessão
+        // Função para salvar tipo de entrega na sessão
         fetch('/carrinho/entrega', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -420,7 +412,7 @@
         }).catch(err => console.error('Erro ao definir entrega:', err));
     }
     
-    // Inicialização
+    // Função para inicializar o carrinho
     document.addEventListener('DOMContentLoaded', () => {
         changeEntrega('RETIRADA');
         selectPagamento('CARTÃO');

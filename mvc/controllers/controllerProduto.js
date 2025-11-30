@@ -2,9 +2,7 @@ import { Produto, Categoria, UnidadeMedida } from '../models/index.js';
 
 export default {
 
-    // ================================
-    // BUSCAR PRODUTOS DO VENDEDOR (para a VIEW)
-    // ================================
+    // Busca produtos do vendedor
     async fetchProdutosVendedor(id_vendedor) {
         try {
             return await Produto.findAll({
@@ -17,9 +15,7 @@ export default {
         }
     },
 
-    // ================================
-    // BUSCAR CATEGORIAS (para o select)
-    // ================================
+    // Busca categorias
     async fetchCategorias() {
         try {
             return await Categoria.findAll();
@@ -29,9 +25,7 @@ export default {
         }
     },
 
-    // ================================
-    // BUSCAR UNIDADES DE MEDIDA (para select)
-    // ================================
+    // Busca unidades de medida
     async fetchUnidades() {
         try {
             return await UnidadeMedida.findAll({
@@ -43,9 +37,7 @@ export default {
         }
     },
 
-    // ================================
     // GET /vendedor/produtos
-    // ================================
     async getProdutosVendedor(req, res) {
         const id_vendedor = req.session.userId;
 
@@ -67,9 +59,7 @@ export default {
         }
     },
 
-    // ================================
     // POST /vendedor/produtos
-    // ================================
     async postProduto(req, res) {
         const id_vendedor = req.session.userId;
 
@@ -79,10 +69,6 @@ export default {
 
         try {
             const { nome_produto, descricao, preco, estoque, id_categoria, id_unidade_medida, url_imagem } = req.body;
-
-            // -------------------------
-            //  VALIDAÇÕES
-            // -------------------------
 
             if (!nome_produto || !preco || !id_unidade_medida) {
                 return res.status(400).json({
@@ -124,9 +110,8 @@ export default {
             });
         }
     },
-    // ================================
+
     // PUT /api/vendedor/produtos/:id
-    // ================================
     async putProduto(req, res) {
         const id_vendedor = req.session.userId;
         const { id } = req.params;
@@ -149,7 +134,7 @@ export default {
 
             const { nome_produto, descricao, preco, estoque, id_categoria, id_unidade_medida, url_imagem, ativo } = req.body;
 
-            // If only updating 'ativo' allow partial update
+            // Se apenas atualizando 'ativo', permite atualização parcial
             if (!nome_produto && typeof ativo === 'undefined') {
                 return res.status(400).json({
                     success: false,
