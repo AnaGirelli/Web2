@@ -744,8 +744,7 @@ Authorization: Bearer SEU_TOKEN
 ```json
 {
   "success": false,
-  "message": "Mensagem de erro",
-  "error": "Detalhes do erro (apenas em desenvolvimento)"
+  "message": "Mensagem de erro"
 }
 ```
 
@@ -906,23 +905,3 @@ npm run api
 ```
 
 A API estará disponível em `http://localhost:3001`
-
-### Executar em modo desenvolvimento
-
-```bash
-npm run api:dev
-```
-
----
-
-## Variáveis de Ambiente
-
-Crie um arquivo `.env` na raiz do projeto (opcional):
-
-```env
-JWT_SECRET=sua_chave_secreta_aqui
-API_PORT=3001
-NODE_ENV=development
-```
-
-Se não fornecer `JWT_SECRET`, será usado o valor padrão: `verdear_secret_key_2025`
