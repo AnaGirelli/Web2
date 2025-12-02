@@ -7,11 +7,14 @@ import apiRoutes from './routes/index.js';
 
 const app = express();
 
-// Configuração CORS para permitir requisições do app mobile
+// Configuração CORS para permitir requisições do app mobile e Swagger UI
 app.use(cors({
     origin: '*', // Em produção precisará especificar os domínios permitidos
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204
 }));
 
 // Middlewares
