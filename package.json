@@ -1,0 +1,37 @@
+{
+  "name": "verdear",
+  "version": "1.0.0",
+  "description": "Projeto MVC com sessões",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node --inspect app.js",
+    "debug": "node --inspect-brk app.js",
+    "api": "node api/server.js",
+    "api:dev": "node --inspect api/server.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "express-session": "^1.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.16.3",
+    "sequelize": "^6.37.7",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "author": "",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AnaGirelli/Web2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AnaGirelli/Web2/issues"
+  },
+  "homepage": "https://github.com/AnaGirelli/Web2#readme"
+}
